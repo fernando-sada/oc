@@ -8,8 +8,12 @@
 <body>
     <h1>Transpose Table Data</h1>
     <form id="tableForm">
+        <label for="path">Enter Path for Images (if applicable):</label><br>
+        <input type="text" id="path" name="path" placeholder="Enter image path here" /><br><br>
+
         <label for="table1">Paste your Table 1 data (include headers in the first row, separate columns with tabs, and rows with new lines):</label><br>
         <textarea name="table1" id="table1" rows="10" cols="80" required></textarea><br><br>
+        
         <button type="submit">Transpose and Save</button>
     </form>
 
@@ -22,6 +26,7 @@
             event.preventDefault(); // Prevent the form from submitting
 
             const table1Input = document.getElementById("table1").value.trim();
+            const pathInput = document.getElementById("path").value.trim();
             if (!table1Input) {
                 document.getElementById("status").textContent = "Invalid input. Please provide valid table data.";
                 document.getElementById("output").textContent = "";
@@ -58,7 +63,15 @@
 
             // Flatten the rows to transpose
             const flattenedRow = table1.reduce((acc, rowData) => {
-                return acc.concat(rowData);
+                rowData.forEach(cell => {
+                    // Check if the cell contains '@', if so, prepend the path input
+                    if (cell.includes('@') && pathInput) {
+                        acc.push(`${pathInput}/${cell}`);
+                    } else {
+                        acc.push(cell);
+                    }
+                });
+                return acc;
             }, []);
             table2.push(flattenedRow);
 
