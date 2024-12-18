@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transpose Table</title>
+</head>
+<body>
+    <h1>Transpose Table Data</h1>
+    <form id="tableForm">
+        <label for="table1">Paste your Table 1 data (include headers in the first row, separate columns with tabs, and rows with new lines):</label><br>
+        <textarea name="table1" id="table1" rows="10" cols="80" required></textarea><br><br>
+        <button type="submit">Transpose and Save</button>
+    </form>
+
+    <h2 id="status"></h2>
+    <h3>Preview:</h3>
+    <pre id="output"></pre>
+
+    <script>
+        document.getElementById("tableForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            const table1Input = document.getElementById("table1").value.trim();
+            if (!table1Input) {
+                document.getElementById("status").textContent = "Invalid input. Please provide valid table data.";
+                document.getElementById("output").textContent = "";
+                return;
+            }
+
+            // Split input into rows
+            const rows = table1Input.split("\n");
+
+            // Extract headers from the first row
+            const headers = rows.shift().split("\t");
+
+            // Convert the remaining rows into a structured array
+            const table1 = rows.map(row => row.split("\t"));
+
+            if (table1.length === 0) {
+                document.getElementById("status").textContent = "Invalid input. Please provide valid table data.";
+                document.getElementById("output").textContent = "";
+                return;
+            }
+
+            // Prepare headers for Table 2
+            const table2Headers = [];
+            for (let i = 1; i <= table1.length; i++) {
+                headers.forEach(header => {
+                    table2Headers.push(`${header} ${i}`);
+                });
+            }
+
+            // Transpose logic for Table 2
+            const table2 = [];
+            const numEntries = table1.length;
+            const groupSize = numEntries;
+
+            // Flatten the rows to transpose
+            const flattenedRow = table1.reduce((acc, rowData) => {
+                return acc.concat(rowData);
+            }, []);
+            table2.push(flattenedRow);
+
+            // Prepare data for output
+            const output = [];
+            output.push(table2Headers.join("\t"));
+            table2.forEach(row => {
+                output.push(row.join("\t"));
+            });
+
+            // Display success message and output preview
+            document.getElementById("status").textContent = "Table Transposed Successfully";
+            document.getElementById("output").textContent = output.join("\n");
+        });
+    </script>
+</body>
+</html>
